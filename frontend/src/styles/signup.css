@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS for Signup Page */
+@keyframes glow {
+  0% { box-shadow: 0 0 10px #3b82f6; }
+  50% { box-shadow: 0 0 20px #8b5cf6; }
+  100% { box-shadow: 0 0 10px #3b82f6; }
+}
+
+.cyber-border {
+  border: 2px solid #3b82f6;
+  position: relative;
+  background: #0a0a0a;
+  animation: glow 3s infinite;
+}
+
+.cyber-input {
+  background: #111827;
+  border: 2px solid #1e40af;
+  color: #bfdbfe;
+  transition: all 0.3s;
+}
+
+.cyber-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 15px #8b5cf6;
+}
+
+.cyber-button {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  transition: all 0.3s;
+}
+
+.cyber-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px #3b82f6;
+}
+
+.password-strength {
+  height: 4px;
+  width: 0;
+  transition: width 0.5s;
+}
+
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

@@ -1,0 +1,174 @@
+/* Matrix-style background for the game page */
+.game-bg {
+    background-color: #000;
+    background-image: 
+      linear-gradient(rgba(0,191,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,191,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* Common font settings */
+  body, .min-h-screen {
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Fade-in animation */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+  
+  /* Gradient text for titles */
+  .gradient-text {
+    background: linear-gradient(45deg, #00bfff, #8a2be2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  /* Hover glow effect */
+  .hover-glow:hover {
+    text-shadow: 0 0 8px #00bfff;
+    transition: text-shadow 0.3s ease;
+  }
+  
+  /* Highlight style */
+  .highlight {
+    color: #00bfff;
+    font-weight: bold;
+    text-shadow: 0 0 4px #00bfff;
+  }
+  
+  /* --- Choice Container (Step 0) --- */
+  .choice-container {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Animated border: a rotating gradient (trail-like movement) */
+  @keyframes borderAnimation {
+    0% {
+      border-image: linear-gradient(0deg, #00bfff, #8a2be2) 1;
+    }
+    100% {
+      border-image: linear-gradient(360deg, #00bfff, #8a2be2) 1;
+    }
+  }
+  
+  .choice-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .choice-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .choice-button {
+    padding: 0.75rem 1.25rem;
+    background-color: #00bfff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  .choice-button:hover {
+    background-color: #0088cc;
+    transform: scale(1.05);
+  }
+  
+  /* --- Sales Detail Container (Form Container) --- */
+  .sales-detail-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 2px solid;
+    border-color: #00bfff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    animation: fade-in 1s ease-out forwards, borderAnimation 3s linear infinite;
+  }
+  
+  /* Glowing container: applies animated border and glow effect */
+  .glowing-container {
+    box-shadow: 0 0 15px rgba(0,191,255,0.7);
+    animation: borderAnimation 3s linear infinite;
+    border-image-slice: 1;
+  }
+  
+  /* Form title and inputs */
+  .form-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .form-select,
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 5px;
+    border: 1px solid #00bfff;
+    background-color: #111;
+    color: #fff;
+  }
+  .form-input {
+    margin-top: 0.5rem;
+  }
+  
+  /* --- Button Container for Centering and Spacing --- */
+  .button-container {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  /* Next/Play button styling */
+  .next-button, .submit-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #00bfff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  .next-button:hover, .submit-button:hover {
+    background-color: #0088cc;
+    transform: scale(1.05);
+  }
+  
+  /* --- Summary Container Styling --- */
+  .summary-container {
+    margin: 20px 0;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .choice-container {
+      width: 90%;
+      height: auto;
+      padding: 1rem;
+    }
+    .sales-detail-container {
+      width: 90%;
+    }
+  }
+  

@@ -1,0 +1,91 @@
+/* Top text container: centers title and subtitle */
+.top-text-container {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* Matrix-style background: black with blue grid lines */
+.matrix-bg {
+    background-color: #000;
+    background-image: 
+      linear-gradient(rgba(0,191,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,191,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Custom hover effect: glowing blue text */
+.hover-glow:hover {
+    text-shadow: 0 0 8px #0ff;
+    transition: text-shadow 0.3s ease;
+}
+
+/* Animate the field text with a subtle pulse on hover */
+.field-text {
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+.field-text:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 10px #0ff;
+}
+
+/* Metrics list styling */
+.metrics-list {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Metric item styling */
+.metric-item {
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Chart section styling */
+.chart-section {
+    padding: 1rem;
+    background: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+/* Cyber text and gradient text styling */
+.cyber-text {
+    font-family: 'Agency FB', sans-serif;
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Matrix background for cyberpunk vibe (extra subtle grid) */
+.matrix-bg {
+    background-image: 
+      linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Reusable glass-effect styling */
+.glass-effect {
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .performance-page {
+      padding: 1rem;
+    }
+}

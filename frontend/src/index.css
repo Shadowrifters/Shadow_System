@@ -1,0 +1,14 @@
+/* src/index.css */
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-y: auto;  /* Enables vertical scrolling when needed */
+  overflow-x: hidden; /* Prevents horizontal scrolling */
+}

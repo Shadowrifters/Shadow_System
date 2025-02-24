@@ -1,0 +1,107 @@
+/* Matrix-style background matching donation.css */
+.update-bg {
+    background-color: #000;
+    background-image: 
+      linear-gradient(rgba(0,191,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,191,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    padding-top: 80px; /* Ensures content starts below the header */
+    position: relative;
+  }
+  
+  /* Container for update content */
+  .update-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  /* Gradient title styling */
+  .update-title {
+    background: linear-gradient(45deg, #00bfff, #8a2be2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  /* Styling for each update card */
+  .update-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0,191,255,0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .update-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0,191,255,0.3);
+  }
+  
+  /* Date styling */
+  .update-date {
+    color: #00bfff;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Update details: bold and larger font for emphasis */
+  .update-details {
+    margin-top: 1rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #fff;
+  }
+  
+  /* Read More button styling */
+  .read-more-btn {
+    background-color: transparent;
+    border: 1px solid #00bfff;
+    color: #00bfff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 1rem;
+  }
+  
+  .read-more-btn:hover {
+    background-color: #00bfff;
+    color: #000;
+  }
+  
+  /* Back to Top button styling */
+  .back-to-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #00bfff;
+    color: #000;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.3s;
+    opacity: 0.8;
+  }
+  
+  .back-to-top-btn:hover {
+    opacity: 1;
+  }
+  
+  /* Fade-in animation (mirroring donation.css) */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+  

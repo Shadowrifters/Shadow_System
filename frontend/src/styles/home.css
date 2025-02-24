@@ -1,0 +1,142 @@
+/* Global Styles: always show vertical scrollbar */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #000;
+  overflow-y: scroll; /* Always show vertical scrollbar */
+  overflow-x: hidden;
+}
+
+/* Keyframes */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes text-glow {
+  0%, 100% { text-shadow: 0 0 10px #3b82f6; }
+  50% { text-shadow: 0 0 20px #8b5cf6; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Typography and Effects */
+.cyber-text {
+  animation: text-glow 3s infinite;
+  font-family: 'Agency FB', sans-serif;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Emoji styling */
+.emoji {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+}
+
+/* Background */
+.matrix-bg {
+  background-image: 
+    linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Glass and Button Effects */
+.glass-effect {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59,130,246,0.3);
+}
+
+.glass-button {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59,130,246,0.3);
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(59,130,246,0.3);
+  border-color: rgba(139,92,246,0.5);
+  transform: scale(1.05);
+}
+
+.enter-world-button {
+  background: rgba(17, 24, 39, 0.8);
+  padding: 12px 24px;
+  border: 2px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(45deg, #00eaff, #ff00e0, #00eaff);
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: glowBorder 3s linear infinite;
+}
+
+@keyframes glowBorder {
+  0% {
+    border-image-source: linear-gradient(45deg, #00eaff, #ff00e0, #00eaff);
+  }
+  50% {
+    border-image-source: linear-gradient(45deg, #ff00e0, #00eaff, #ff00e0);
+  }
+  100% {
+    border-image-source: linear-gradient(45deg, #00eaff, #ff00e0, #00eaff);
+  }
+}
+
+.enter-world-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px #00eaff;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+.modal {
+  background: #1a1a1a;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fade-in 1s forwards;
+}
+
+/* Delay Utilities */
+.delay-500 { animation-delay: 500ms; }
+.delay-1000 { animation-delay: 1000ms; }
+.delay-1500 { animation-delay: 1500ms; }
+.delay-2000 { animation-delay: 2000ms; }
+.delay-2500 { animation-delay: 2500ms; }
+
+/* Float Animation */
+.animate-float {
+  animation: float 2s infinite;
+}
+
+/* Ensure sections start hidden */
+section {
+  opacity: 0;
+}

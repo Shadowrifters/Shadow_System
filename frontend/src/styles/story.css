@@ -1,0 +1,126 @@
+/* Story.css */
+
+/* Full-page container with matrix-style background and centered layout */
+.story-page {
+    min-height: 100vh;
+    background-color: #000;
+    background-image: 
+      linear-gradient(rgba(0,191,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,191,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  
+  /* Story content container that spans full width with padding */
+  .story-content {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 100px; /* Space below the header */
+    text-align: left;
+  }
+  
+  /* Typewriter effect styling */
+  .typewriter {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2rem;
+    line-height: 1.5;
+    color: #0f0;             /* Neon green text */
+    white-space: pre-wrap;   /* Respect line breaks and wrap naturally */
+    overflow-wrap: break-word;
+    margin: 0;
+  }
+  
+  /* Terminal prompt styling */
+  .prompt {
+    font-weight: bold;
+  }
+  
+  /* Blinking cursor */
+  .cursor {
+    display: inline-block;
+    animation: blink 1s step-end infinite;
+  }
+  
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  
+  /* Play button container: centered below the text with vertical spacing */
+  .play-container {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  /* Play button styling with animated border */
+  .play-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.2rem;
+    background-color: #00bfff;
+    border: 2px solid;
+    border-image-slice: 1;
+    animation: borderAnimation 3s linear infinite;
+    border-radius: 5px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .play-button:hover {
+    background-color: #0088cc;
+  }
+  
+  /* Skip button: fixed in the bottom-right corner */
+  .skip-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #00bfff;
+    border: 2px solid;
+    border-image-slice: 1;
+    animation: borderAnimation 3s linear infinite;
+    border-radius: 5px;
+    color: #000;
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+  }
+  
+  .skip-button:hover {
+    background-color: #0088cc;
+  }
+  
+  /* Animated border for buttons */
+  @keyframes borderAnimation {
+    0% { border-image: linear-gradient(45deg, #00bfff, #8a2be2, #00bfff) 1; }
+    50% { border-image: linear-gradient(45deg, #8a2be2, #00bfff, #8a2be2) 1; }
+    100% { border-image: linear-gradient(45deg, #00bfff, #8a2be2, #00bfff) 1; }
+  }
+  
+  /* Mobile-friendly adjustments */
+  @media (max-width: 600px) {
+    .story-content {
+      margin-top: 80px;
+      padding: 10px;
+    }
+    
+    .typewriter {
+      font-size: 1.5rem;
+    }
+    
+    .play-button {
+      font-size: 1rem;
+    }
+    
+    .skip-button {
+      font-size: 0.9rem;
+      padding: 0.5rem 0.8rem;
+    }
+  }
+  

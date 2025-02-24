@@ -1,0 +1,127 @@
+/* src/styles/instruction.css */
+
+/* Matrix-style background for the instruction page */
+.instruction-bg {
+    background-color: #000;
+    background-image: 
+      linear-gradient(rgba(0,191,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,191,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* Gradient text for titles */
+  .gradient-text {
+    background: linear-gradient(45deg, #00bfff, #8a2be2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  /* Fade-in animation */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+  
+  /* Hover glow effect */
+  .hover-glow:hover {
+    text-shadow: 0 0 8px #00bfff;
+    transition: text-shadow 0.3s ease;
+  }
+  
+  /* Instruction text style */
+  .instruction-text {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #b3e5fc;
+  }
+  
+  /* Highlight style for important text */
+  .highlight {
+    color: #00bfff;
+    font-weight: bold;
+    text-shadow: 0 0 4px #00bfff;
+  }
+  
+  /* App Cards Styles */
+  .app-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .app-card {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  
+  /* Center the app image */
+  .app-card img {
+    display: block;
+    margin: 0 auto 10px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .app-card h3 {
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #00bfff;
+  }
+  
+  .app-details {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    color: #8a2be2;
+  }
+  
+  .store-links a {
+    display: block;
+    color: #00aaff;
+    text-decoration: none;
+    margin-top: 5px;
+  }
+  
+  .store-links a:hover {
+    text-decoration: underline;
+  }
+  
+  .visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Next and Donate button styling */
+  .next-button, .donate-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #00bfff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  .next-button:hover, .donate-button:hover {
+    background-color: #0088cc;
+    transform: scale(1.05);
+  }
+  
+  /* Animate app cards appearance */
+  .app-container .app-card {
+    animation: fade-in 0.6s ease-out forwards;
+    animation-delay: 0.2s;
+  }
+  

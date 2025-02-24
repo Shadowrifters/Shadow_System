@@ -1,0 +1,51 @@
+/* Matrix‑style background with a black base and blue grid lines */
+.feedback-bg {
+    background-color: #000;
+    background-image: 
+      linear-gradient(rgba(0,191,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,191,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* Gradient text effect for the title */
+  .gradient-text {
+    background: linear-gradient(45deg, #00bfff, #8a2be2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  /* Fade‑in animation */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+  
+  /* Hover glow effect for interactive text */
+  .hover-glow:hover {
+    text-shadow: 0 0 8px #00bfff;
+    transition: text-shadow 0.3s ease;
+  }
+  
+  /* Responsive Iframe Container */
+  /* Set a height based on the viewport minus header and title space */
+  .iframe-container {
+    width: 100%;
+    height: calc(100vh - 300px);
+    position: relative;
+    overflow: auto;
+  }
+  
+  /* Make the iframe fill its container */
+  .responsive-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  

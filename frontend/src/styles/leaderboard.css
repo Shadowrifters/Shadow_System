@@ -1,0 +1,78 @@
+/* Matrix-style background with black base and blue grid lines */
+.leaderboard-bg {
+    background-color: #000;
+    background-image: 
+      linear-gradient(rgba(0,191,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,191,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* Gradient text for the title */
+  .gradient-text {
+    background: linear-gradient(45deg, #00bfff, #8a2be2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  /* Fade-in animation */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+  
+  /* Hover glow effect for text */
+  .hover-glow:hover {
+    text-shadow: 0 0 8px #00bfff;
+    transition: text-shadow 0.3s ease;
+  }
+  
+  /* Podium Stage Styles */
+  .podium-stage {
+    align-items: flex-end;
+    border-top: 2px solid rgba(0,191,255,0.4);
+    padding-top: 1rem;
+  }
+  .podium-item {
+    animation: podium-rise 0.8s ease-out;
+  }
+  @keyframes podium-rise {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Blurry, bluish glass effect for podium rectangles */
+  .podium-rect {
+    background: rgba(0,191,255,0.2);
+    backdrop-filter: blur(6px);
+    border: 2px solid rgba(0,191,255,0.4);
+    border-radius: 4px;
+  }
+  
+  /* Leaderboard table styling */
+  .leaderboard-table {
+    background: rgba(0, 0, 0, 0.85);
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 0.75rem 1rem;
+  }
+  .leaderboard-table th {
+    font-size: 1.25rem;
+  }
+  .leaderboard-table td {
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(0,191,255,0.4);
+  }
+  
+  /* Remove background color change on hover from table rows; use zoom and text glow only */
+  .leaderboard-table tr:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+  }
+  
