@@ -16,7 +16,7 @@ const Signup = () => {
       return;
     }
     try {
-      const res = await fetch(`https://shadow-system.vercel.app//api/check-codename?codename=${encodeURIComponent(codename)}`);
+      const res = await fetch(`https://shadow-system.vercel.app/api/check-codename?codename=${encodeURIComponent(codename)}`);
       const data = await res.json();
       if (!res.ok) {
         setCodeNameStatus('Error checking availability.');
@@ -44,7 +44,7 @@ const Signup = () => {
     }
 
     try {
-      const res = await fetch('https://shadow-system.vercel.app//api/signup', {
+      const res = await fetch('https://shadow-system.vercel.app/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ codename, email, password }),

@@ -9,7 +9,7 @@ const Leaderboard = () => {
   useEffect(() => {
     async function fetchLeaderboardData() {
       try {
-        const response = await fetch('https://shadow-system.vercel.app//api/leaderboard');
+        const response = await fetch('https://shadow-system.vercel.app/api/leaderboard');
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setLeaderboardData(data);

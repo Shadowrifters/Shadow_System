@@ -1,6 +1,6 @@
 // UpdateAnalysis.js
-import { supabasePerformance } from './server/supabasePerformanceClient.js';
-import { calculateSELO } from './server/SELOcalc.js';
+import { supabasePerformance } from './supabasePerformanceClient.js';
+import { calculateSELO } from './SELOcalc.js';
 
 export async function updateUserAnalysis(displayName, newData) {
   // Fetch the existing analysis row for the current user.
