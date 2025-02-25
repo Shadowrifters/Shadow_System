@@ -6,9 +6,9 @@ const soundPaths = {
     charge: "/assets/Sprites/Firevizard/Charge.mp3"
   },
   enemy: {
-    Attack_1: "/assets/Sprites/Lightning Mage/Attack_1.mp3",
-    Attack_2: "/assets/Sprites/Lightning Mage/Attack_2.mp3",
-    charge: "/assets/Sprites/Lightning Mage/Charge.mp3"
+    Attack_1: "/assets/Sprites/LightningMage/Attack_1.mp3",
+    Attack_2: "/assets/Sprites/LightningMage/Attack_2.mp3",
+    charge: "/assets/Sprites/LightningMage/Charge.mp3"
   }
 };
 

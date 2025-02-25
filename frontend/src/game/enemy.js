@@ -39,7 +39,7 @@ class Enemy {
       const config = statesConfig[state];
       const img = new Image();
       // Assets in public are served from the root, so use a leading slash.
-      img.src = `/assets/Sprites/Lightning Mage/${state}.png`;
+      img.src = `/assets/Sprites/LightningMage/${state}.png`;
       let frameSpeed = state === "Jump" ? 5 : 10;
       if (state === "Attack_1" || state === "Attack_2") frameSpeed = 5;
       this.animations[state] = new SpriteAnimation(
