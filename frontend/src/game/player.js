@@ -40,7 +40,7 @@ class Player {
     Object.keys(statesConfig).forEach((state) => {
       const config = statesConfig[state];
       const img = new Image();
-      img.src = `/assets/Sprites/Firevizard/${state}.png`;
+      img.src = `public/assets/Sprites/Firevizard/${state}.png`;
       let frameSpeed = state === "Jump" ? 15 : 10;
       if (state === "Attack_1" || state === "Attack_2") frameSpeed = 5;
       this.animations[state] = new SpriteAnimation(

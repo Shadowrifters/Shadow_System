@@ -1,14 +1,14 @@
 // src/game/soundManager.js
 const soundPaths = {
     player: {
-      Attack_1: "/assets/Sprites/Firevizard/Attack_1.mp3",
-      Attack_2: "/assets/Sprites/Firevizard/Attack_2.mp3",
-      charge: "/assets/Sprites/Firevizard/Charge.mp3"
+      Attack_1: "public/assets/Sprites/Firevizard/Attack_1.mp3",
+      Attack_2: "public/assets/Sprites/Firevizard/Attack_2.mp3",
+      charge: "public/assets/Sprites/Firevizard/Charge.mp3"
     },
     enemy: {
-      Attack_1: "/assets/Sprites/Lightning Mage/Attack_1.mp3",
-      Attack_2: "/assets/Sprites/Lightning Mage/Attack_2.mp3",
-      charge: "/assets/Sprites/Lightning Mage/Charge.mp3"
+      Attack_1: "public/assets/Sprites/Lightning Mage/Attack_1.mp3",
+      Attack_2: "public/assets/Sprites/Lightning Mage/Attack_2.mp3",
+      charge: "public/assets/Sprites/Lightning Mage/Charge.mp3"
     }
   };
   

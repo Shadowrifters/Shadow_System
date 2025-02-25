@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  // Load all environment variables, including VITE_SERVER_URL
+  // Load environment variables (e.g., VITE_SERVER_URL)
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
