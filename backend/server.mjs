@@ -14,11 +14,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Retrieve the allowed origin from the environment variable and remove any trailing slash.
-let allowedOrigin = process.env.Frontend || 'https://shadow-system-main.vercel.app';
+// Get the allowed origin from environment variable (Frontend) and remove trailing slash if present.
+let allowedOrigin = process.env.Frontend || 'https://shadow-system-main.vercel.app/analysis';
 if (allowedOrigin.endsWith('/')) {
   allowedOrigin = allowedOrigin.slice(0, -1);
 }
+console.log("Allowed Origin:", allowedOrigin);
 
 app.use(cors({
   origin: allowedOrigin,
@@ -195,6 +196,7 @@ app.post('/api/analysis', async (req, res) => {
       analysisRow = newRow;
     }
     
+    // Ensure the update import path is correct.
     const { updateUserAnalysis } = await import('./UpdateAnalysis.js');
     const updatedData = await updateUserAnalysis(displayName, newData);
     res.json({ status: 'success', data: updatedData, fullAnalysis: analysisResult });
