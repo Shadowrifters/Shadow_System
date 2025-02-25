@@ -4,9 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  // Load environment variables (e.g., VITE_SERVER_URL)
   const env = loadEnv(mode, process.cwd(), '');
-
   return {
     plugins: [react(), tailwindcss()],
     server: {
@@ -26,6 +24,7 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(process.cwd(), 'src')
       }
     },
-    base: './'
+    // Set base to "/" so that assets are referenced absolutely from the root.
+    base: '/'
   };
 });

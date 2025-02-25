@@ -1,4 +1,5 @@
 // src/game/soundManager.js
+
 const soundPaths = {
   player: {
     Attack_1: "/assets/Sprites/Firevizard/Attack_1.mp3",
@@ -6,7 +7,7 @@ const soundPaths = {
     charge: "/assets/Sprites/Firevizard/Charge.mp3"
   },
   enemy: {
-    Attack_1: "/assets/Sprites/LightningMage/Attack_1.mp3",
+    Attack_1: "/assets/Sprites/LightningMage/Attack_1.mp3", // Ensure folder is named exactly "LightningMage"
     Attack_2: "/assets/Sprites/LightningMage/Attack_2.mp3",
     charge: "/assets/Sprites/LightningMage/Charge.mp3"
   }
@@ -22,7 +23,10 @@ function loadSound(url) {
     const audio = new Audio();
     audio.src = url;
     audio.addEventListener("canplaythrough", () => resolve(audio));
-    audio.addEventListener("error", (e) => reject(e));
+    audio.addEventListener("error", (e) => {
+      console.error("Error loading sound from:", url, e);
+      reject(e);
+    });
   });
 }
 
@@ -44,33 +48,13 @@ async function preloadSounds() {
 }
 
 function playSound(character, attackName) {
-  const role =
-    typeof character.role === "string" ? character.role : String(character.role);
+  const role = character.role; // should be "player" or "enemy"
   if (!soundCache[role] || !soundCache[role][attackName]) {
     console.error(`Sound for ${role} ${attackName} not loaded.`);
     return;
   }
   const soundClone = soundCache[role][attackName].cloneNode();
-  if (role === "enemy" && attackName === "Attack_1") {
-    soundClone.addEventListener(
-      "canplaythrough",
-      () => {
-        try {
-          soundClone.currentTime = 5;
-          soundClone.play().catch((err) =>
-            console.error("Error playing sound:", err)
-          );
-        } catch (err) {
-          console.error("Error setting currentTime or playing sound:", err);
-        }
-      },
-      { once: true }
-    );
-  } else {
-    soundClone.play().catch((err) =>
-      console.error("Error playing sound:", err)
-    );
-  }
+  soundClone.play().catch(err => console.error("Error playing sound:", err));
 }
 
 export { preloadSounds, playSound };
