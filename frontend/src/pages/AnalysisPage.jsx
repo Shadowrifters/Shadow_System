@@ -38,7 +38,7 @@ const AnalysisPage = () => {
     }
     const fetchAnalysis = async () => {
       try {
-        const res = await fetch('https://shadow-system.vercel.app//api/analysis', {
+        const res = await fetch('https://shadow-system.vercel.app/api/analysis', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ transcript, displayName })
