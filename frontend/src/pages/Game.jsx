@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Game.css";
+import "../styles/game.css";
 import Player from "../game/player.js";
 import Enemy from "../game/enemy.js";
 import UI from "../game/ui.js";
