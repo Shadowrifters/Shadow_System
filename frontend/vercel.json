@@ -2,6 +2,24 @@
   "version": 2,
   "headers": [
     {
+      "source": "/assets/Sprites/LightningMage/Charge.png",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/png"
+        }
+      ]
+    },
+    {
+      "source": "/assets/Sprites/Firevizard/Charge.png",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/png"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)\\.png",
       "headers": [
         {
