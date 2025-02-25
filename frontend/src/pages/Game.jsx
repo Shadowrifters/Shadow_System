@@ -7,7 +7,7 @@ import UI from "../game/ui.js";
 import moveToward from "../game/moveToward.js";
 import Bullet from "../game/bullet.js";
 import { supabase } from "../supabaseClient.js";
-import { preloadSounds, playSound } from "../game/soundManager.js";
+// import { preloadSounds, playSound } from "../game/soundManager.js"; // Sound imports commented out
 
 // Guard for process.env
 const SERVER_BASE_URL =
@@ -60,7 +60,7 @@ const Game = () => {
 
   useEffect(() => {
     // Preload all sounds on startup
-    preloadSounds();
+    // preloadSounds(); // SOUND preloading commented out
 
     async function getCurrentUser() {
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -246,7 +246,7 @@ const Game = () => {
         if (player.pendingAttack.move === "Charge") {
           // For charge, do not change the player's animation.
           if (!player.pendingAttack.soundPlayed) {
-            playSound(player, "charge");
+            // playSound(player, "charge");  // SOUND PLAY invocation commented out
             player.pendingAttack.soundPlayed = true;
           }
           // Immediately fire a bullet from the player's position.
@@ -274,7 +274,7 @@ const Game = () => {
             const currentAnim = player.animations[player.pendingAttack.move];
             if (currentAnim && currentAnim.currentFrame >= currentAnim.frameCount - 1) {
               if (!player.pendingAttack.soundPlayed) {
-                playSound(player, player.pendingAttack.move);
+                // playSound(player, player.pendingAttack.move);  // SOUND PLAY invocation commented out
                 player.pendingAttack.soundPlayed = true;
               }
               enemy.health = Math.max(enemy.health - player.pendingAttack.attackPower, 5);
@@ -293,7 +293,7 @@ const Game = () => {
         if (enemy.pendingAttack.move === "Charge") {
           // For enemy charge, fire a bullet immediately without changing its animation.
           if (!enemy.pendingAttack.soundPlayed) {
-            playSound(enemy, "charge");
+            // playSound(enemy, "charge");  // SOUND PLAY invocation commented out
             enemy.pendingAttack.soundPlayed = true;
           }
           bullets.push(
@@ -325,7 +325,7 @@ const Game = () => {
             const currentAnim = enemy.animations[enemy.pendingAttack.move];
             if (currentAnim && currentAnim.currentFrame >= currentAnim.frameCount - 1) {
               if (!enemy.pendingAttack.soundPlayed) {
-                playSound(enemy, enemy.pendingAttack.move);
+                // playSound(enemy, enemy.pendingAttack.move);  // SOUND PLAY invocation commented out
                 enemy.pendingAttack.soundPlayed = true;
               }
               player.health = Math.max(player.health - enemy.pendingAttack.attackPower, 1);
@@ -543,7 +543,7 @@ const Game = () => {
           </button>
           {analysisLoading && (
             <p className="loading">
-              Analyzing conversation... please wait
+              Analyzing conversation...wait
             </p>
           )}
         </div>
