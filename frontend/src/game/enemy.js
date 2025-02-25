@@ -29,19 +29,17 @@ class Enemy {
       Run: { sheetWidth: 1024, sheetHeight: 128, frameCount: 8, loop: true },
       Walk: { sheetWidth: 768, sheetHeight: 128, frameCount: 6, loop: true },
       Hurt: { sheetWidth: 384, sheetHeight: 128, frameCount: 3, loop: true },
-      Light_charge: { sheetWidth: 179, sheetHeight: 128, frameCount: 14, loop: true },
-      Light_ball: { sheetWidth: 1024, sheetHeight: 128, frameCount: 8, loop: true },
       Dead: { sheetWidth: 768, sheetHeight: 128, frameCount: 6, loop: true },
       Attack_1: { sheetWidth: 1280, sheetHeight: 128, frameCount: 10, loop: false },
       Attack_2: { sheetWidth: 512, sheetHeight: 128, frameCount: 4, loop: false },
-      // New Charge animation state for the player
       Charge: { sheetWidth: 576, sheetHeight: 64, frameCount: 9, loop: false }
     };
 
     Object.keys(statesConfig).forEach((state) => {
       const config = statesConfig[state];
       const img = new Image();
-      img.src = `public/assets/Sprites/Lightning Mage/${state}.png`;
+      // Assets in public are served from the root, so use a leading slash.
+      img.src = `/assets/Sprites/Lightning Mage/${state}.png`;
       let frameSpeed = state === "Jump" ? 5 : 10;
       if (state === "Attack_1" || state === "Attack_2") frameSpeed = 5;
       this.animations[state] = new SpriteAnimation(

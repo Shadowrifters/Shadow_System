@@ -23,14 +23,13 @@ class Player {
   }
 
   loadAnimations() {
+    // Removed Flame_jet and Fireball as there are no images for those states.
     const statesConfig = {
       Idle: { sheetWidth: 896, sheetHeight: 128, frameCount: 7, loop: true },
       Jump: { sheetWidth: 1152, sheetHeight: 128, frameCount: 9, loop: false },
       Run: { sheetWidth: 1024, sheetHeight: 128, frameCount: 8, loop: true },
       Walk: { sheetWidth: 768, sheetHeight: 128, frameCount: 6, loop: true },
       Hurt: { sheetWidth: 384, sheetHeight: 128, frameCount: 3, loop: true },
-      Flame_jet: { sheetWidth: 179, sheetHeight: 128, frameCount: 14, loop: true },
-      Fireball: { sheetWidth: 1024, sheetHeight: 128, frameCount: 8, loop: true },
       Dead: { sheetWidth: 768, sheetHeight: 128, frameCount: 6, loop: true },
       Attack_1: { sheetWidth: 512, sheetHeight: 128, frameCount: 4, loop: false },
       Attack_2: { sheetWidth: 512, sheetHeight: 128, frameCount: 4, loop: false },
@@ -40,7 +39,8 @@ class Player {
     Object.keys(statesConfig).forEach((state) => {
       const config = statesConfig[state];
       const img = new Image();
-      img.src = `public/assets/Sprites/Firevizard/${state}.png`;
+      // Update the image source to load from public assets using a leading slash.
+      img.src = `/assets/Sprites/Firevizard/${state}.png`;
       let frameSpeed = state === "Jump" ? 15 : 10;
       if (state === "Attack_1" || state === "Attack_2") frameSpeed = 5;
       this.animations[state] = new SpriteAnimation(
