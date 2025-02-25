@@ -13,11 +13,19 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const Frontend = process.env.Frontend || 'http://localhost:3000';
+
+// Retrieve the allowed origin from the environment variable and remove any trailing slash.
+let allowedOrigin = process.env.Frontend || 'https://shadow-system-main.vercel.app';
+if (allowedOrigin.endsWith('/')) {
+  allowedOrigin = allowedOrigin.slice(0, -1);
+}
 
 app.use(cors({
-  origin: Frontend,
+  origin: allowedOrigin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 
 /* ----------------------
@@ -135,17 +143,14 @@ app.post('/api/analysis', async (req, res) => {
   }
   
   try {
-    // Call the analysis AI once.
     const analysisResult = await analyzeFinalTranscript(transcript);
     if (!analysisResult) {
       return res.status(500).json({ status: 'failed', message: 'Final analysis returned null.' });
     }
     
-    // Convert the analysis result to score data.
     const newData = convertJsonToData(analysisResult);
     newData.play_count = newData.play_count || 1;
     
-    // Check if an analysis row exists for the current user.
     let { data: analysisRow, error: fetchError } = await supabasePerformance
       .from('analysis_data')
       .select('*')
@@ -155,7 +160,6 @@ app.post('/api/analysis', async (req, res) => {
       throw new Error(fetchError.message);
     }
     
-    // If no row exists, insert a new row with default values.
     if (!analysisRow) {
       const initialData = {
         opening_score: 0,
@@ -180,7 +184,6 @@ app.post('/api/analysis', async (req, res) => {
       if (insertError) {
         throw new Error(insertError.message);
       }
-      // Fetch the newly inserted row.
       const { data: newRow, error: newFetchError } = await supabasePerformance
         .from('analysis_data')
         .select('*')
@@ -192,11 +195,8 @@ app.post('/api/analysis', async (req, res) => {
       analysisRow = newRow;
     }
     
-    // Update the user's analysis row.
     const { updateUserAnalysis } = await import('./UpdateAnalysis.js');
     const updatedData = await updateUserAnalysis(displayName, newData);
-    
-    // Return the updated analysis record along with the full analysis AI output.
     res.json({ status: 'success', data: updatedData, fullAnalysis: analysisResult });
   } catch (error) {
     console.error('Error in /api/analysis:', error);
@@ -293,11 +293,10 @@ app.get('/api/verify-analysis-rows', async (req, res) => {
   }
 });
 
-// Additional routes to handle the home page and favicon requests.
+// Additional routes to handle home page and favicon requests.
 app.get('/', (req, res) => {
   res.send('Welcome to the Shadow System API!');
 });
-
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.get('/favicon.png', (req, res) => res.status(204).end());
 
