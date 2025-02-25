@@ -9,6 +9,7 @@
           "value": "image/png"
         }
       ]
+    
     },
     {
       "source": "/assets/(.*)\\.mp3",
