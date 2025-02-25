@@ -1,5 +1,25 @@
 {
   "version": 2,
+  "headers": [
+    {
+      "source": "/assets/(.*)\\.png",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/png"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)\\.mp3",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "audio/mpeg"
+        }
+      ]
+    }
+  ],
   "builds": [
     {
       "src": "package.json",
@@ -11,7 +31,7 @@
   ],
   "routes": [
     {
-      "src": "/(.*\\.(js|jsx|css|png|jpg|jpeg|svg|ico))",
+      "src": "/(.*\\.(js|jsx|css|png|mp3))",
       "dest": "/$1"
     },
     {
