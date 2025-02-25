@@ -1,7 +1,7 @@
 // server/supabaseAuthClient.js
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
+dotenv.config();
 
 const supabaseAuthUrl = process.env.SUPABASE_AUTH_URL;
 const supabaseAuthKey = process.env.SUPABASE_AUTH_KEY;

@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
+dotenv.config();
 
 const supabasePerformanceUrl = process.env.SUPABASE_PERFORMANCE_URL;
 const supabasePerformanceKey = process.env.SUPABASE_PERFORMANCE_KEY;

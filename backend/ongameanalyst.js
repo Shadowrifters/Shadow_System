@@ -1,7 +1,7 @@
 // server/ai/ongameanalyst.js
 import Together from 'together-ai';
 import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
+dotenv.config();
 
 console.log("TOGETHER_API_KEY_ANALYST:", process.env.TOGETHER_API_KEY_ANALYST);
 
