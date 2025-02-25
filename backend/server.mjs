@@ -14,6 +14,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 const Frontend = process.env.Frontend || 'http://localhost:3000';
+
 app.use(cors({
   origin: Frontend, // Adjust as needed.
 }));
@@ -292,4 +293,13 @@ app.get('/api/verify-analysis-rows', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => { console.log(`Server running on port ${PORT}`); });
+// Additional routes to handle the home page and favicon.
+app.get('/', (req, res) => {
+  res.send('Welcome to the Shadow System API!');
+});
+
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
