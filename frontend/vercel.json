@@ -2,85 +2,52 @@
   "version": 2,
   "headers": [
     {
-      "source": "/assets/Sprites/LightningMage/Charge.png",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/png"
-        }
-      ]
-    },
-    {
-      "source": "/assets/Sprites/Firevizard/Charge.png",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/png"
-        }
-      ]
-    },
-    {
       "source": "/assets/(.*)\\.png",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/png"
-        }
+        { "key": "Content-Type", "value": "image/png" }
       ]
     },
     {
       "source": "/assets/(.*)\\.jpg",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/jpeg"
-        }
+        { "key": "Content-Type", "value": "image/jpeg" }
       ]
     },
     {
       "source": "/assets/(.*)\\.jpeg",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/jpeg"
-        }
+        { "key": "Content-Type", "value": "image/jpeg" }
       ]
     },
     {
       "source": "/assets/(.*)\\.svg",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "image/svg+xml"
-        }
+        { "key": "Content-Type", "value": "image/svg+xml" }
       ]
     },
     {
       "source": "/assets/(.*)\\.mp3",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "audio/mpeg"
-        }
+        { "key": "Content-Type", "value": "audio/mpeg" }
       ]
     },
     {
       "source": "/(.*)\\.js",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript"
-        }
+        { "key": "Content-Type", "value": "application/javascript" }
       ]
     },
     {
       "source": "/(.*)\\.css",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/css"
-        }
+        { "key": "Content-Type", "value": "text/css" }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/assets/:path*",
+      "destination": "/assets/:path*"
     }
   ],
   "builds": [
