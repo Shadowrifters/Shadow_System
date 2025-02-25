@@ -11,7 +11,7 @@ import { preloadSounds, playSound } from "../game/soundManager.js";
 
 // Guard for process.env
 const SERVER_BASE_URL =
-  (typeof process !== "undefined" && process.env.REACT_APP_SERVER_URL) ||
+  (typeof process !== "undefined" && process.env.VITE_SERVER_URL) ||
   "http://localhost:5000";
 
 const Game = () => {
@@ -167,7 +167,7 @@ const Game = () => {
     // Random Background: choose one of nine images (bg1.png to bg9.png)
     const bgImage = new Image();
     const randomIndex = Math.floor(Math.random() * 9) + 1;
-    bgImage.src = `assets/Sprites/bg${randomIndex}.png`;
+    bgImage.src = `/assets/Sprites/bg${randomIndex}.png`;
 
     const player = new Player(ctx);
     const enemy = new Enemy(ctx);

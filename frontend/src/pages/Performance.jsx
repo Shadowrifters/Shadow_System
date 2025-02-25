@@ -34,7 +34,7 @@ ChartJS.register(
 
 // Guard for process.env (in case process is not defined in the browser)
 const SERVER_BASE_URL =
-  (typeof process !== "undefined" && process.env.REACT_APP_SERVER_URL) ||
+  (typeof process !== "undefined" && process.env.VITE_SERVER_URL) ||
   "http://localhost:5000";
 
 const Performance = () => {

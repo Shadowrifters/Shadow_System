@@ -4,19 +4,20 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  // Load all environment variables from your .env file (including REACT_APP_SERVER_URL)
+  // Load all environment variables, including VITE_SERVER_URL
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
     plugins: [react(), tailwindcss()],
-    // Setup a proxy for API calls (adjust as needed)
     server: {
       port: 3000,
       proxy: {
         '/api': {
-          target: env.REACT_APP_SERVER_URL || 'http://localhost:5000',
+          target: env.VITE_SERVER_URL || 'http://localhost:5000',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          rewrite: (path) => {
+            return path.replace(/^\/api/, '');
+          }
         }
       }
     },
@@ -25,7 +26,6 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(process.cwd(), 'src')
       }
     },
-    // Use a relative base path if you plan to deploy to a subdirectory
     base: './'
-  }
+  };
 });
