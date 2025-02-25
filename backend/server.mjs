@@ -3,10 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { supabaseAuth } from './supabaseAuthClient.js';
 import { supabasePerformance } from './supabasePerformanceClient.js';
-import { getCustomerResponse } from './ai/customer.js';
-import { analyzeGamePerformance } from './ai/ongameanalyst.js';
-import { analyzeFinalTranscript } from '../finalanalyst.js';
-import { generateStory } from './ai/story.js';
+import { getCustomerResponse } from './customer.js';
+import { analyzeGamePerformance } from './ongameanalyst.js';
+import { analyzeFinalTranscript } from './finalanalyst.js';
+import { generateStory } from './story.js';
 import { convertJsonToData } from './jsonTOdata.js';
 
 dotenv.config();
