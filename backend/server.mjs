@@ -10,33 +10,22 @@ import { generateStory } from './story.js';
 import { convertJsonToData } from './jsonTOdata.js';
 
 dotenv.config();
+ console.log("Server starting...")
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-// Retrieve the allowed origin from your environment variable.
-// Make sure that in your Vercel backend settings, Frontend is set to your frontend URL without a trailing slash.
-let allowedOrigin = process.env.Frontend || 'http://localhost:3000';
-if (allowedOrigin.endsWith('/')) {
-  allowedOrigin = allowedOrigin.slice(0, -1);
-}
-console.log("Allowed Origin:", allowedOrigin);
+const Frontend = process.env.Frontend || 'http://localhost:3000';
 
 app.use(cors({
-  origin: allowedOrigin,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: Frontend,
 }));
-
 app.use(express.json());
 
-// Root route: when accessing the root URL, return a welcome message.
-app.get('/', (req, res) => {
-  res.send('Welcome to the Shadow System API!');
-});
+/* ----------------------
+   Authentication Endpoints
+----------------------*/
 
-// API Endpoints
-
+// GET /api/check-codename - Check if codename (display_name) is taken.
 app.get('/api/check-codename', async (req, res) => {
   const { codename } = req.query;
   if (!codename) return res.status(400).json({ error: 'codename query parameter is required.' });
@@ -46,6 +35,7 @@ app.get('/api/check-codename', async (req, res) => {
   res.status(200).json({ available: !taken });
 });
 
+// POST /api/signup - Create a new auth record and automatically create a new analysis row.
 app.post('/api/signup', async (req, res) => {
   const { email, password, codename } = req.body;
   if (!email || !password || !codename) {
@@ -65,6 +55,7 @@ app.post('/api/signup', async (req, res) => {
   });
   if (signUpError) return res.status(400).json({ error: signUpError.message });
   
+  // Create the analysis row with all scores initialized to zero.
   const initialData = {
     opening_score: 0,
     discovery_score: 0,
@@ -96,6 +87,7 @@ app.post('/api/signup', async (req, res) => {
   res.status(200).json({ message: 'Signup successful. Please verify your email.', data: signUpData });
 });
 
+// POST /api/signin - Sign in using email and password.
 app.post('/api/signin', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
@@ -104,6 +96,11 @@ app.post('/api/signin', async (req, res) => {
   res.status(200).json({ message: 'Signin successful', data });
 });
 
+/* ----------------------
+   AI & Game Endpoints
+----------------------*/
+
+// POST /api/customer-response - Returns a customer response based on message and scenarioOptions.
 app.post('/api/customer-response', async (req, res) => {
   const { message, scenarioOptions } = req.body;
   if (!message) return res.status(400).json({ error: "No message provided." });
@@ -116,6 +113,7 @@ app.post('/api/customer-response', async (req, res) => {
   }
 });
 
+// POST /api/analyze-game-performance - Analyze game performance.
 app.post('/api/analyze-game-performance', async (req, res) => {
   const { role, currentText, previousText, currentHealth } = req.body;
   if (!role || !currentText || !previousText || currentHealth == null) {
@@ -130,6 +128,7 @@ app.post('/api/analyze-game-performance', async (req, res) => {
   }
 });
 
+// POST /api/analysis - Process transcript using analysis AI and update the user's record.
 app.post('/api/analysis', async (req, res) => {
   const { transcript, displayName } = req.body;
   if (!transcript || !displayName) {
@@ -137,14 +136,17 @@ app.post('/api/analysis', async (req, res) => {
   }
   
   try {
+    // Call the analysis AI once.
     const analysisResult = await analyzeFinalTranscript(transcript);
     if (!analysisResult) {
       return res.status(500).json({ status: 'failed', message: 'Final analysis returned null.' });
     }
     
+    // Convert the analysis result to score data.
     const newData = convertJsonToData(analysisResult);
     newData.play_count = newData.play_count || 1;
     
+    // Check if an analysis row exists for the current user.
     let { data: analysisRow, error: fetchError } = await supabasePerformance
       .from('analysis_data')
       .select('*')
@@ -154,6 +156,7 @@ app.post('/api/analysis', async (req, res) => {
       throw new Error(fetchError.message);
     }
     
+    // If no row exists, insert a new row with default values.
     if (!analysisRow) {
       const initialData = {
         opening_score: 0,
@@ -178,6 +181,7 @@ app.post('/api/analysis', async (req, res) => {
       if (insertError) {
         throw new Error(insertError.message);
       }
+      // Fetch the newly inserted row.
       const { data: newRow, error: newFetchError } = await supabasePerformance
         .from('analysis_data')
         .select('*')
@@ -189,8 +193,11 @@ app.post('/api/analysis', async (req, res) => {
       analysisRow = newRow;
     }
     
+    // Update the user's analysis row.
     const { updateUserAnalysis } = await import('./UpdateAnalysis.js');
     const updatedData = await updateUserAnalysis(displayName, newData);
+    
+    // Return the updated analysis record along with the full analysis AI output.
     res.json({ status: 'success', data: updatedData, fullAnalysis: analysisResult });
   } catch (error) {
     console.error('Error in /api/analysis:', error);
@@ -198,6 +205,7 @@ app.post('/api/analysis', async (req, res) => {
   }
 });
 
+// POST /api/story - Generate a story based on scenarioOptions.
 app.post('/api/story', async (req, res) => {
   const { scenarioOptions } = req.body;
   try {
@@ -209,6 +217,11 @@ app.post('/api/story', async (req, res) => {
   }
 });
 
+/* ----------------------
+   Leaderboard & Performance Endpoints
+----------------------*/
+
+// GET /api/leaderboard - Returns all analysis_data rows sorted by selo_points descending.
 app.get('/api/leaderboard', async (req, res) => {
   const { data, error } = await supabasePerformance
     .from('analysis_data')
@@ -218,6 +231,7 @@ app.get('/api/leaderboard', async (req, res) => {
   res.status(200).json(data);
 });
 
+// GET /api/performance - Returns the analysis_data row for a given display_name.
 app.get('/api/performance', async (req, res) => {
   const { display_name } = req.query;
   if (!display_name) return res.status(400).json({ error: "display_name query parameter is required." });
@@ -231,6 +245,7 @@ app.get('/api/performance', async (req, res) => {
   res.status(200).json(data);
 });
 
+// GET /api/verify-analysis-rows - (Optional) Verify every registered user has an analysis row.
 app.get('/api/verify-analysis-rows', async (req, res) => {
   try {
     const { data: users, error: listError } = await supabaseAuth.auth.admin.listUsers();
@@ -277,6 +292,11 @@ app.get('/api/verify-analysis-rows', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Additional routes to handle the home page and favicon requests.
+app.get('/', (req, res) => {
+  res.send('Welcome to the Shadow System API!');
 });
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
