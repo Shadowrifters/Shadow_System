@@ -1,55 +1,5 @@
 {
   "version": 2,
-  "headers": [
-    {
-      "source": "/assets/(.*)\\.png",
-      "headers": [
-        { "key": "Content-Type", "value": "image/png" }
-      ]
-    },
-    {
-      "source": "/assets/(.*)\\.jpg",
-      "headers": [
-        { "key": "Content-Type", "value": "image/jpeg" }
-      ]
-    },
-    {
-      "source": "/assets/(.*)\\.jpeg",
-      "headers": [
-        { "key": "Content-Type", "value": "image/jpeg" }
-      ]
-    },
-    {
-      "source": "/assets/(.*)\\.svg",
-      "headers": [
-        { "key": "Content-Type", "value": "image/svg+xml" }
-      ]
-    },
-    {
-      "source": "/assets/(.*)\\.mp3",
-      "headers": [
-        { "key": "Content-Type", "value": "audio/mpeg" }
-      ]
-    },
-    {
-      "source": "/(.*)\\.js",
-      "headers": [
-        { "key": "Content-Type", "value": "application/javascript" }
-      ]
-    },
-    {
-      "source": "/(.*)\\.css",
-      "headers": [
-        { "key": "Content-Type", "value": "text/css" }
-      ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/assets/:path*",
-      "destination": "/assets/:path*"
-    }
-  ],
   "builds": [
     {
       "src": "package.json",
@@ -61,7 +11,7 @@
   ],
   "routes": [
     {
-      "src": "/(.*\\.(js|jsx|css|png|jpg|jpeg|svg|mp3))",
+      "src": "/(.*\\.(js|jsx|css|png|jpg|jpeg|svg|ico))",
       "dest": "/$1"
     },
     {
