@@ -1,4 +1,5 @@
 import SpriteAnimation from "./animation.js";
+console.log("bullets are loaded")
 
 class Bullet {
   /**
