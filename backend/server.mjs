@@ -3,10 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { supabaseAuth } from './supabaseAuthClient.js';
 import { supabasePerformance } from './supabasePerformanceClient.js';
-import { getCustomerResponse } from './customer.js';
-import { analyzeGamePerformance } from './ongameanalyst.js';
-import { analyzeFinalTranscript } from './finalanalyst.js';
-import { generateStory } from './story.js';
+import { getCustomerResponse } from './ai/customer.js';
+import { analyzeGamePerformance } from './ai/ongameanalyst.js';
+import { analyzeFinalTranscript } from '../finalanalyst.js';
+import { generateStory } from './ai/story.js';
 import { convertJsonToData } from './jsonTOdata.js';
 
 dotenv.config();
@@ -14,8 +14,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Get the allowed origin from environment variable (Frontend) and remove trailing slash if present.
-let allowedOrigin = process.env.Frontend || 'https://shadow-system-main.vercel.app/analysis';
+// Configure allowed origin using the Frontend environment variable.
+// Ensure Frontend is set to your frontend URL (e.g., https://shadow-system-main.vercel.app) without a trailing slash.
+let allowedOrigin = process.env.Frontend || 'http://localhost:3000';
 if (allowedOrigin.endsWith('/')) {
   allowedOrigin = allowedOrigin.slice(0, -1);
 }
@@ -29,11 +30,13 @@ app.use(cors({
 
 app.use(express.json());
 
-/* ----------------------
-   Authentication Endpoints
-----------------------*/
+// Root route: return a welcome message
+app.get('/', (req, res) => {
+  res.send('Welcome to the Shadow System API!');
+});
 
-// GET /api/check-codename - Check if codename (display_name) is taken.
+// API Endpoints
+
 app.get('/api/check-codename', async (req, res) => {
   const { codename } = req.query;
   if (!codename) return res.status(400).json({ error: 'codename query parameter is required.' });
@@ -43,7 +46,6 @@ app.get('/api/check-codename', async (req, res) => {
   res.status(200).json({ available: !taken });
 });
 
-// POST /api/signup - Create a new auth record and automatically create a new analysis row.
 app.post('/api/signup', async (req, res) => {
   const { email, password, codename } = req.body;
   if (!email || !password || !codename) {
@@ -63,7 +65,6 @@ app.post('/api/signup', async (req, res) => {
   });
   if (signUpError) return res.status(400).json({ error: signUpError.message });
   
-  // Create the analysis row with all scores initialized to zero.
   const initialData = {
     opening_score: 0,
     discovery_score: 0,
@@ -95,7 +96,6 @@ app.post('/api/signup', async (req, res) => {
   res.status(200).json({ message: 'Signup successful. Please verify your email.', data: signUpData });
 });
 
-// POST /api/signin - Sign in using email and password.
 app.post('/api/signin', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
@@ -104,11 +104,6 @@ app.post('/api/signin', async (req, res) => {
   res.status(200).json({ message: 'Signin successful', data });
 });
 
-/* ----------------------
-   AI & Game Endpoints
-----------------------*/
-
-// POST /api/customer-response - Returns a customer response based on message and scenarioOptions.
 app.post('/api/customer-response', async (req, res) => {
   const { message, scenarioOptions } = req.body;
   if (!message) return res.status(400).json({ error: "No message provided." });
@@ -121,7 +116,6 @@ app.post('/api/customer-response', async (req, res) => {
   }
 });
 
-// POST /api/analyze-game-performance - Analyze game performance.
 app.post('/api/analyze-game-performance', async (req, res) => {
   const { role, currentText, previousText, currentHealth } = req.body;
   if (!role || !currentText || !previousText || currentHealth == null) {
@@ -136,7 +130,6 @@ app.post('/api/analyze-game-performance', async (req, res) => {
   }
 });
 
-// POST /api/analysis - Process transcript using analysis AI and update the user's record.
 app.post('/api/analysis', async (req, res) => {
   const { transcript, displayName } = req.body;
   if (!transcript || !displayName) {
@@ -196,7 +189,6 @@ app.post('/api/analysis', async (req, res) => {
       analysisRow = newRow;
     }
     
-    // Ensure the update import path is correct.
     const { updateUserAnalysis } = await import('./UpdateAnalysis.js');
     const updatedData = await updateUserAnalysis(displayName, newData);
     res.json({ status: 'success', data: updatedData, fullAnalysis: analysisResult });
@@ -206,7 +198,6 @@ app.post('/api/analysis', async (req, res) => {
   }
 });
 
-// POST /api/story - Generate a story based on scenarioOptions.
 app.post('/api/story', async (req, res) => {
   const { scenarioOptions } = req.body;
   try {
@@ -218,11 +209,6 @@ app.post('/api/story', async (req, res) => {
   }
 });
 
-/* ----------------------
-   Leaderboard & Performance Endpoints
-----------------------*/
-
-// GET /api/leaderboard - Returns all analysis_data rows sorted by selo_points descending.
 app.get('/api/leaderboard', async (req, res) => {
   const { data, error } = await supabasePerformance
     .from('analysis_data')
@@ -232,7 +218,6 @@ app.get('/api/leaderboard', async (req, res) => {
   res.status(200).json(data);
 });
 
-// GET /api/performance - Returns the analysis_data row for a given display_name.
 app.get('/api/performance', async (req, res) => {
   const { display_name } = req.query;
   if (!display_name) return res.status(400).json({ error: "display_name query parameter is required." });
@@ -246,7 +231,6 @@ app.get('/api/performance', async (req, res) => {
   res.status(200).json(data);
 });
 
-// GET /api/verify-analysis-rows - (Optional) Verify every registered user has an analysis row.
 app.get('/api/verify-analysis-rows', async (req, res) => {
   try {
     const { data: users, error: listError } = await supabaseAuth.auth.admin.listUsers();
@@ -295,10 +279,6 @@ app.get('/api/verify-analysis-rows', async (req, res) => {
   }
 });
 
-// Additional routes to handle home page and favicon requests.
-app.get('/', (req, res) => {
-  res.send('Welcome to the Shadow System API!');
-});
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.get('/favicon.png', (req, res) => res.status(204).end());
 
