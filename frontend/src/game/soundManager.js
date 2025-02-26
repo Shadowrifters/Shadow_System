@@ -1,5 +1,3 @@
-// src/game/soundManager.js
-
 const soundPaths = {
   player: {
     Attack_1: "/assets/Sprites/Firevizard/Attack_1.mp3",
@@ -21,12 +19,13 @@ const soundCache = {
 function loadSound(url) {
   return new Promise((resolve, reject) => {
     const audio = new Audio();
+    audio.preload = "auto"; // Enable preloading explicitly
     audio.src = url;
-    audio.addEventListener("canplaythrough", () => resolve(audio));
+    audio.addEventListener("canplaythrough", () => resolve(audio), { once: true });
     audio.addEventListener("error", (e) => {
       console.error("Error loading sound from:", url, e);
       reject(e);
-    });
+    }, { once: true });
   });
 }
 
