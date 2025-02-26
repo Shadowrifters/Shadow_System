@@ -11,11 +11,9 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       proxy: {
         '/api': {
-          target: env.VITE_SERVER_URL || 'http://localhost:5000',
+          target: env.VITE_SERVER_URL || 'https://shadow-system.vercel.app',
           changeOrigin: true,
-          rewrite: (path) => {
-            return path.replace(/^\/api/, '');
-          }
+          rewrite: (path) => path.replace(/^\/api/, '')
         }
       }
     },
@@ -24,7 +22,7 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(process.cwd(), 'src')
       }
     },
-    // Set base to "/" so that assets are referenced absolutely from the root.
-    base: '/'
+    // Change base from "/" to "./" so asset paths remain relative
+    base: './'
   };
 });
