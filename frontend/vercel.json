@@ -11,6 +11,11 @@
   ],
   "routes": [
     {
+      "src": "/(.*\\.mp3)",
+      "headers": { "Content-Type": "audio/mpeg" },
+      "dest": "/$1"
+    },
+    {
       "src": "/(.*\\.(js|jsx|css|png|jpg|jpeg|svg|ico))",
       "dest": "/$1"
     },
