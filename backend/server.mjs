@@ -18,6 +18,8 @@ const Frontend = process.env.Frontend || 'https://Shadow-System-main.vercel.app'
 
 app.use(cors({
   origin: Frontend,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // Add your custom headers
 }));
 app.use(express.json());
 
