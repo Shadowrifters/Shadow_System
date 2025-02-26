@@ -3,10 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { supabaseAuth } from './supabaseAuthClient.js';
 import { supabasePerformance } from './supabasePerformanceClient.js';
-import { getCustomerResponse } from './ai/customer.js';
-import { analyzeGamePerformance } from './ai/ongameanalyst.js';
-import { analyzeFinalTranscript } from '../finalanalyst.js';
-import { generateStory } from './ai/story.js';
+import { getCustomerResponse } from './customer.js';
+import { analyzeGamePerformance } from './ongameanalyst.js';
+import { analyzeFinalTranscript } from './finalanalyst.js';
+import { generateStory } from './story.js';
 import { convertJsonToData } from './jsonTOdata.js';
 
 dotenv.config();
@@ -14,8 +14,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Configure allowed origin using the Frontend environment variable.
-// Ensure Frontend is set to your frontend URL (e.g., https://shadow-system-main.vercel.app) without a trailing slash.
+// Retrieve the allowed origin from your environment variable.
+// Make sure that in your Vercel backend settings, Frontend is set to your frontend URL without a trailing slash.
 let allowedOrigin = process.env.Frontend || 'http://localhost:3000';
 if (allowedOrigin.endsWith('/')) {
   allowedOrigin = allowedOrigin.slice(0, -1);
@@ -30,7 +30,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// Root route: return a welcome message
+// Root route: when accessing the root URL, return a welcome message.
 app.get('/', (req, res) => {
   res.send('Welcome to the Shadow System API!');
 });
