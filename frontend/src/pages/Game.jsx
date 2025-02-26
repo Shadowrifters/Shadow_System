@@ -9,10 +9,10 @@ import Bullet from "../game/bullet.js";
 import { supabase } from "../supabaseClient.js";
 import { preloadSounds, playSound } from "../game/soundManager.js";
 
-// Guard for process.env
 const SERVER_BASE_URL =
   (typeof process !== "undefined" && process.env.VITE_SERVER_URL) ||
-  "http://localhost:3001";
+  "https://shadow-system.vercel.app"; // Remove trailing slash
+
 
 const Game = () => {
   const canvasRef = useRef(null);

@@ -18,11 +18,11 @@ class Bullet {
     // For the player, the sprite sheet is 768x64 with 12 frames (each frame 64x64).
     if (this.source === "player") {
       const img = new Image();
-      img.src = "public/assets/Sprites/Firevizard/Charge.png";
+      img.src = "/assets/Sprites/Firevizard/Charge.png";
       this.animation = new SpriteAnimation(img, 768 / 12, 64, 12, 5, true);
     } else {
       const img = new Image();
-      img.src = "public/assets/Sprites/LightningMage/Charge.png";
+      img.src = "/assets/Sprites/LightningMage/Charge.png";
       this.animation = new SpriteAnimation(img, 768 / 12, 64, 12, 5, true);
     }
     this.width = 768 / 12; // 64
