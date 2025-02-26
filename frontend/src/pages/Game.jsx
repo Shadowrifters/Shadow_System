@@ -12,7 +12,7 @@ import { preloadSounds, playSound } from "../game/soundManager.js";
 // Guard for process.env
 const SERVER_BASE_URL =
   (typeof process !== "undefined" && process.env.VITE_SERVER_URL) ||
-  "https://shadow-system.vercel.app";
+  "http://localhost:3001";
 
 const Game = () => {
   const canvasRef = useRef(null);
