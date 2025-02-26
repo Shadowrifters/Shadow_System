@@ -7,7 +7,8 @@ if (!API_KEY) {
   console.error("GOOGLE_API_KEY environment variable is not set. Please set it in your .env file.");
 }
 const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-preview-02-05" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+
 
 export async function analyzeFinalTranscript(transcript) {
   const prompt = `

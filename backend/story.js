@@ -4,7 +4,7 @@ dotenv.config();
 
 const API_KEY = process.env.GOOGLE_API_KEY_STORY || 'your_google_api_key_here';
 const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-preview-02-05" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
 export async function generateStory(scenarioOptions = {}) {
   // Extract timeline details
