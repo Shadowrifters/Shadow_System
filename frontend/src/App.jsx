@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Signin from './pages/Signin';
@@ -14,9 +14,33 @@ import Feedback from './pages/Feedback';
 import Donation from './pages/Donation';
 import Instruction from './pages/Steps';
 import Updates from './pages/Updates';
-import AnalysisPage from './pages/AnalysisPage'
+import AnalysisPage from './pages/AnalysisPage';
 
 function App() {
+  useEffect(() => {
+    // Create and append the Google Analytics script
+    const gaScript = document.createElement('script');
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-7S1JCD2F0L';
+    gaScript.async = true;
+    document.head.appendChild(gaScript);
+
+    // Insert inline GA configuration script
+    const inlineScript = document.createElement('script');
+    inlineScript.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7S1JCD2F0L');
+    `;
+    document.head.appendChild(inlineScript);
+
+    // Cleanup function to remove scripts if App unmounts
+    return () => {
+      document.head.removeChild(gaScript);
+      document.head.removeChild(inlineScript);
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <Router>
