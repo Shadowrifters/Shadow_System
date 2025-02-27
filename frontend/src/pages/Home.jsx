@@ -66,7 +66,7 @@ const Home = () => {
   return (
     <>
       <Header />
-      <main className="pt-32 pb-20 px-6 min-h-screen">
+      <main className="donation-bg pt-32 pb-20 px-6 min-h-screen">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-8">
             {/* Warning text with typewriter effect; neon effect removed for plain red color */}
@@ -102,7 +102,7 @@ const Home = () => {
                     <span className="text-purple-400"> The Arcane Enclave</span>
                   </h3>
                   <p className="text-lg text-blue-300">
-                  <span className="inline-block animate-float emoji">✨</span> Step into a realm where wizards and mages command ancient magic and guard timeless secrets. Here, you must negotiate with mystical beings to harness their arcane power and begin restoring time.
+                    <span className="inline-block animate-float emoji">✨</span> Step into a realm where wizards and mages command ancient magic and guard timeless secrets. Here, you must negotiate with mystical beings to harness their arcane power and begin restoring time.
                   </p>
                 </div>
               </section>
