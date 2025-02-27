@@ -39,7 +39,7 @@ class SpriteAnimation {
      * @param {number} y - Destination y.
      * @param {number} [scale=1] - Scale factor.
      */
-    draw(ctx, x, y, scale = 1) {
+    draw(ctx, x, y, scale = 3) {
       if (!this.image.complete || this.image.naturalWidth === 0) return;
       ctx.drawImage(
         this.image,

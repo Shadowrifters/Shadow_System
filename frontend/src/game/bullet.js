@@ -21,13 +21,15 @@ class Bullet {
       const img = new Image();
       img.src = "/assets/Sprites/Firevizard/Charge.png";
       this.animation = new SpriteAnimation(img, 768 / 12, 64, 12, 5, true);
+      this.width = 768 / 12; // 64
+      this.height = 64;
     } else {
       const img = new Image();
       img.src = "/assets/Sprites/LightningMage/Charge.png";
-      this.animation = new SpriteAnimation(img, 768 / 12, 64, 12, 5, true);
+      this.animation = new SpriteAnimation(img, 576 / 9, 64, 9, 5, true);
+      this.width = 576/9; // 64
+      this.height = 64;
     }
-    this.width = 768 / 12; // 64
-    this.height = 64;
   }
   
   update() {
