@@ -30,7 +30,7 @@ const Game = () => {
   const gameOverRef = useRef(false);
   const navigate = useNavigate();
 
-  // Check for a signed-in user on mount using supabase.auth.getSession()
+  // Check for signed-in user on mount
   useEffect(() => {
     const checkUserSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -51,7 +51,6 @@ const Game = () => {
 
   useEffect(() => {
     preloadSounds();
-
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const gameTimer = gameTimerRef.current;
@@ -61,6 +60,7 @@ const Game = () => {
     const gameOverOverlay = gameOverOverlayRef.current;
     const winnerText = winnerTextRef.current;
 
+    // Helper functions
     const preloadImage = (img) =>
       new Promise((resolve, reject) => {
         if (img.complete && img.naturalWidth) resolve();
@@ -80,6 +80,7 @@ const Game = () => {
     };
 
     const preloadBackground = (bgImg) => preloadImage(bgImg);
+
     const updateTimer = (timerElem, startTime) => {
       const currentTime = Date.now();
       const elapsed = Math.floor((currentTime - startTime) / 1000);
@@ -126,9 +127,29 @@ const Game = () => {
       typeLetter();
     };
 
+    // Declare player and enemy before using them
+    const player = new Player(ctx);
+    const enemy = new Enemy(ctx);
+    player.role = "player";
+    enemy.role = "enemy";
+
+    // resizeCanvas: Set canvas dimensions and scale characters so their idle height is ~70% of canvas height.
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight - dialogContainer.offsetHeight;
+      // Calculate scale so that the idle frame height equals 70% of canvas height.
+      if (player.animations["Idle"]) {
+        player.scale = (canvas.height * 0.45) / player.animations["Idle"].frameHeight;
+      }
+      if (enemy.animations["Idle"]) {
+        enemy.scale = (canvas.height * 0.45) / enemy.animations["Idle"].frameHeight;
+      }
+      // Position characters: player 50px from left, enemy 50px from right.
+      player.x = 1;
+      if (enemy.animations["Idle"]) {
+        const enemyWidth = enemy.animations["Idle"].frameWidth * enemy.scale;
+        enemy.x = canvas.width - enemyWidth - 1;
+      }
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
@@ -141,15 +162,11 @@ const Game = () => {
       characterData: true,
     });
 
-    // Random Background: choose one of nine images (bg1.png to bg9.png)
+    // Random background
     const bgImage = new Image();
     const randomIndex = Math.floor(Math.random() * 9) + 1;
     bgImage.src = `/assets/Sprites/bg${randomIndex}.png`;
 
-    const player = new Player(ctx);
-    const enemy = new Enemy(ctx);
-    player.role = "player";
-    enemy.role = "enemy";
     const ui = new UI(ctx, canvas, player, enemy);
     let bullets = [];
     Promise.all([
@@ -158,26 +175,24 @@ const Game = () => {
       preloadCharacterImages(enemy),
     ]).catch((err) => console.error("Error preloading images:", err));
 
-    if (player.animations["Idle"] && player.animations["Idle"].frameHeight) {
+    // Position characters vertically based on idle image height.
+    if (player.animations["Idle"]) {
       player.y = canvas.height - player.animations["Idle"].frameHeight * player.scale;
     }
-    if (enemy.animations["Idle"] && enemy.animations["Idle"].frameHeight) {
+    if (enemy.animations["Idle"]) {
       enemy.y = canvas.height - enemy.animations["Idle"].frameHeight * enemy.scale;
     }
+
     let startTime = Date.now();
     let conversationTranscript = "";
-    let playerShouldMove = false;
-    let enemyShouldMove = false;
 
-    // endGame: Re-check session and send transcript to API.
-    // This function ends the game and shows the winner overlay.
+    // endGame: End the game and show the overlay.
     const endGame = async (winMessage) => {
       console.log("Ending game with message:", winMessage);
       gameOverRef.current = true;
       if (winnerText) winnerText.innerText = winMessage;
       if (gameOverOverlay) gameOverOverlay.classList.remove("hidden");
       setAnalysisLoading(true);
-
       try {
         console.log("Transcript sent to analysis API:", conversationTranscript);
         const { data: { session } } = await supabase.auth.getSession();
@@ -191,7 +206,6 @@ const Game = () => {
         } else {
           console.log("User is not signed in (rechecked).");
         }
-
         const response = await fetch(`${SERVER_BASE_URL}/api/analysis`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -211,9 +225,7 @@ const Game = () => {
       }
     };
 
-    // Removed Analyse button handler as it's no longer in the menu.
-
-    // In player attack logic, if the returned weapon is "none" or "end", do nothing.
+    // Attack processing functions.
     const processPlayerAttack = () => {
       if (player.pendingAttack) {
         const weaponLower = player.pendingAttack.weapon?.toLowerCase();
@@ -263,7 +275,6 @@ const Game = () => {
       }
     };
 
-    // In enemy attack logic, if the returned weapon is "none" or "end", do nothing.
     const processEnemyAttack = () => {
       if (enemy.pendingAttack) {
         const weaponLower = enemy.pendingAttack.weapon?.toLowerCase();
@@ -326,16 +337,13 @@ const Game = () => {
       if (bgImage.complete) {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       }
-
       processPlayerAttack();
       processEnemyAttack();
-
       bullets.forEach((bullet) => {
         bullet.update();
         bullet.draw(ctx);
       });
       bullets = bullets.filter((bullet) => bullet.active);
-
       const playerBox = {
         x: player.x,
         y: player.y,
@@ -356,7 +364,6 @@ const Game = () => {
           ? enemy.animations["Idle"].frameHeight * enemy.scale
           : 50,
       };
-
       bullets.forEach((bullet) => {
         const bulletCenter = {
           x: bullet.x + bullet.width / 2,
@@ -381,7 +388,6 @@ const Game = () => {
       });
       player.health = Math.max(player.health, 1);
       enemy.health = Math.max(enemy.health, 5);
-
       player.update();
       player.draw();
       enemy.update();
@@ -414,8 +420,6 @@ const Game = () => {
             const customerReply = customerReplyRaw.trim() === "" ? "No response" : customerReplyRaw;
             conversationTranscript += `Customer: ${customerReply}\n`;
             animateEnemyText(customerReply, dialogOutput);
-
-            // Analyze enemy performance
             const enemyHealth = enemy.health ?? 100;
             const resEnemy = await fetch(`${SERVER_BASE_URL}/api/analyze-game-performance`, {
               method: "POST",
@@ -441,8 +445,6 @@ const Game = () => {
                 weapon: enemyAnalysis.Weapon || "Idle",
               };
             }
-
-            // Analyze player performance
             const playerHealth = player.health ?? 100;
             const resPlayer = await fetch(`${SERVER_BASE_URL}/api/analyze-game-performance`, {
               method: "POST",
@@ -513,7 +515,6 @@ const Game = () => {
           >
             Home
           </button>
-          {/* Removed Analyse button */}
         </div>
       )}
       <div id="gameOverOverlay" ref={gameOverOverlayRef} className="hidden">
@@ -529,9 +530,6 @@ const Game = () => {
             </>
           )}
         </div>
-      </div>
-      <div id="orientationWarning" className="hidden">
-        Please rotate your device.
       </div>
     </div>
   );
