@@ -1,71 +1,73 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 import Header from '../components/Header';
+import AuthModal from '../components/AuthModal';
+import { useAuth } from '../context/AuthContext';
 import '../styles/analysis.css';
-import { supabase } from '../supabaseClient';
 
 const AnalysisPage = () => {
-  // In a real app, the transcript should come from your game’s conversation.
-  // Here we set a default dummy transcript.
-  const [transcript] = useState("This is the user's game conversation transcript.");
-  
-  const [user, setUser] = useState(null);
-  const [analysisResponse, setAnalysisResponse] = useState(null);
+  const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  // First, retrieve the current user from Supabase auth.
+  // Log the session status on mount.
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) {
-        setError("User not signed in.");
-        setLoading(false);
-        return;
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && session.user) {
+        const name = session.user.user_metadata?.display_name || session.user.email || "Unknown User";
+        console.log("User is signed in:", name);
+      } else {
+        console.log("User is not signed in.");
       }
-      setUser(user);
     };
-    fetchUser();
+    checkSession();
   }, []);
 
-  // Once the user is available, call the analysis endpoint only once.
+  // Load final analysis from localStorage on component mount.
   useEffect(() => {
-    if (!user) return;
-    const displayName = user.user_metadata?.display_name;
-    if (!displayName) {
-      setError("Display name not set. Please complete registration.");
-      setLoading(false);
-      return;
-    }
-    const fetchAnalysis = async () => {
-      try {
-        const res = await fetch('https://shadow-system.vercel.app/api/analysis', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transcript, displayName })
-        });
-        const json = await res.json();
-        if (json.status === 'success') {
-          setAnalysisResponse(json);
-        } else {
-          setError(json.error || 'Analysis failed.');
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    try {
+      const storedAnalysis = localStorage.getItem("finalAnalysis");
+      console.log("Stored analysis from localStorage:", storedAnalysis);
+      if (storedAnalysis) {
+        const parsed = JSON.parse(storedAnalysis);
+        // Use fullAnalysis if available.
+        const analysis = parsed.fullAnalysis ? parsed.fullAnalysis : parsed;
+        setAnalysisData(analysis);
+      } else {
+        setError("No analysis data available. Please finish a game to generate analysis.");
       }
-    };
-    // Call only once when the user is loaded.
-    fetchAnalysis();
-  }, [user]); // no transcript dependency so that the call is not repeated
+    } catch (err) {
+      console.error("Error parsing analysis data:", err);
+      setError("Failed to load analysis data.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Handler for Play button: if user is signed in, navigate to game; otherwise, open auth modal.
+  const handlePlayClick = () => {
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      navigate("/game");
+    }
+  };
+
+  // Handler for Home button: navigate to home.
+  const handleHomeClick = () => {
+    navigate("/home");
+  };
 
   if (loading) {
     return (
       <div className="matrix-bg min-h-screen text-white">
         <Header />
-        <div className="pt-24 px-4 pb-8 text-center">
-          Loading analysis...
-        </div>
+        <div className="pt-24 px-4 pb-8 text-center">Loading analysis...</div>
       </div>
     );
   }
@@ -74,25 +76,28 @@ const AnalysisPage = () => {
     return (
       <div className="matrix-bg min-h-screen text-white">
         <Header />
-        <div className="pt-24 px-4 pb-8 text-center">
-          Error: {error}
-        </div>
+        <div className="pt-24 px-4 pb-8 text-center">Error: {error}</div>
       </div>
     );
   }
 
-  // analysisResponse is expected to contain:
-  // - data: the updated DB record with score data
-  // - fullAnalysis: the complete JSON output from the analysis AI (with feedback)
-  const { data: dbData, fullAnalysis } = analysisResponse;
-  const overallScore = fullAnalysis.overallScore || dbData.overall_score;
+  if (!analysisData) {
+    return (
+      <div className="matrix-bg min-h-screen text-white">
+        <Header />
+        <div className="pt-24 px-4 pb-8 text-center">No analysis data found.</div>
+      </div>
+    );
+  }
 
-  // Remove overallScore from the metrics object so it isn’t rendered twice.
-  const metrics = { ...fullAnalysis };
+  // Determine overallScore and metrics.
+  const overallScore = analysisData.overallScore || (analysisData.data && analysisData.data.overall_score) || "N/A";
+  const metrics = { ...analysisData };
   delete metrics.overallScore;
+  if (metrics.data) delete metrics.data;
 
   return (
-    <div className="matrix-bg min-h-screen text-white">
+    <div className="matrix-bg min-h-screen text-white" style={{ position: "relative", paddingBottom: "100px" }}>
       <Header />
       <div className="pt-24 px-4 pb-8">
         <div className="top-text-container">
@@ -100,25 +105,35 @@ const AnalysisPage = () => {
           <p className="text-white">Overall Score: {overallScore}</p>
         </div>
         <div className="metrics-list">
-          {Object.keys(metrics).map((metricKey) => (
-            <div key={metricKey} className="metric-item">
-              <h2 className="field-text text-xl hover-glow">{metricKey}</h2>
-              <p>Score: {metrics[metricKey].score}</p>
-              <p>Feedback: {metrics[metricKey].feedback}</p>
-              {metrics[metricKey].commonObjections && (
-                <div>
-                  <p>Common Objections:</p>
-                  <ul className="list-disc ml-6">
-                    {metrics[metricKey].commonObjections.map((objection, idx) => (
-                      <li key={idx}>{objection}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))}
+          {metrics && Object.keys(metrics).length > 0 ? (
+            Object.keys(metrics).map((metricKey) => (
+              <div key={metricKey} className="metric-item">
+                <h2 className="field-text text-xl hover-glow">{metricKey}</h2>
+                <p>Score: {metrics[metricKey].score}</p>
+                <p>Feedback: {metrics[metricKey].feedback}</p>
+                {metrics[metricKey].commonObjections && (
+                  <div>
+                    <p>Common Objections:</p>
+                    <ul className="list-disc ml-6">
+                      {metrics[metricKey].commonObjections.map((objection, idx) => (
+                        <li key={idx}>{objection}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p>No detailed metrics available.</p>
+          )}
         </div>
       </div>
+      {/* Floating Buttons */}
+      <div className="floating-buttons">
+        <button className="glass-button" onClick={handleHomeClick}>Home</button>
+        <button className="enter-world-button" onClick={handlePlayClick}>Play</button>
+      </div>
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
     </div>
   );
 };

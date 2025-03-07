@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { supabaseAuth   } from './supabaseAuthClient.js';
+import { supabaseAuth } from './supabaseAuthClient.js';
 import { supabasePerformance } from './supabasePerformanceClient.js';
 import { getCustomerResponse } from './customer.js';
 import { analyzeGamePerformance } from './ongameanalyst.js';
@@ -10,7 +10,7 @@ import { generateStory } from './story.js';
 import { convertJsonToData } from './jsonTOdata.js';
 
 dotenv.config();
-console.log("Server starting...")
+console.log("Server starting...");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,16 +19,19 @@ const Frontend = process.env.Frontend || 'https://Shadow-System-main.vercel.app'
 app.use(cors({
   origin: Frontend,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'], // Add your custom headers
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 
-/* ----------------------
-   Authentication Endpoints
-----------------------*/
+// Root route: log connection and confirm the server is up.
+app.get('/', (req, res) => {
+  console.log("Received a connection to the server.");
+  res.send('Server is up!');
+});
 
 // GET /api/check-codename - Check if codename (display_name) is taken.
 app.get('/api/check-codename', async (req, res) => {
+  console.log("Received /api/check-codename request with query:", req.query);
   const { codename } = req.query;
   if (!codename) return res.status(400).json({ error: 'codename query parameter is required.' });
   const { data, error } = await supabaseAuth.auth.admin.listUsers();
@@ -39,6 +42,7 @@ app.get('/api/check-codename', async (req, res) => {
 
 // POST /api/signup - Create a new auth record and automatically create a new analysis row.
 app.post('/api/signup', async (req, res) => {
+  console.log("Received /api/signup request:", req.body);
   const { email, password, codename } = req.body;
   if (!email || !password || !codename) {
     return res.status(400).json({ error: 'Email, password, and codename are required.' });
@@ -91,6 +95,7 @@ app.post('/api/signup', async (req, res) => {
 
 // POST /api/signin - Sign in using email and password.
 app.post('/api/signin', async (req, res) => {
+  console.log("Received /api/signin request:", req.body);
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
   const { data, error } = await supabaseAuth.auth.signInWithPassword({ email, password });
@@ -98,16 +103,14 @@ app.post('/api/signin', async (req, res) => {
   res.status(200).json({ message: 'Signin successful', data });
 });
 
-/* ----------------------
-   AI & Game Endpoints
-----------------------*/
-
 // POST /api/customer-response - Returns a customer response based on message and scenarioOptions.
 app.post('/api/customer-response', async (req, res) => {
+  console.log("Received /api/customer-response request:", req.body);
   const { message, scenarioOptions } = req.body;
   if (!message) return res.status(400).json({ error: "No message provided." });
   try {
     const response = await getCustomerResponse(message, scenarioOptions);
+    console.log("Customer AI response:", response);
     res.json({ response });
   } catch (error) {
     console.error('Error in /api/customer-response:', error);
@@ -117,12 +120,14 @@ app.post('/api/customer-response', async (req, res) => {
 
 // POST /api/analyze-game-performance - Analyze game performance.
 app.post('/api/analyze-game-performance', async (req, res) => {
+  console.log("Received /api/analyze-game-performance request:", req.body);
   const { role, currentText, previousText, currentHealth } = req.body;
   if (!role || !currentText || !previousText || currentHealth == null) {
     return res.status(400).json({ error: "Missing parameters." });
   }
   try {
     const result = await analyzeGamePerformance({ role, currentText, previousText, currentHealth });
+    console.log("On-game analyst AI response:", result);
     res.json(result);
   } catch (error) {
     console.error('Error in /api/analyze-game-performance:', error);
@@ -132,14 +137,16 @@ app.post('/api/analyze-game-performance', async (req, res) => {
 
 // POST /api/analysis - Process transcript using analysis AI and update the user's record.
 app.post('/api/analysis', async (req, res) => {
+  console.log("Received /api/analysis request:", req.body);
   const { transcript, displayName } = req.body;
   if (!transcript || !displayName) {
     return res.status(400).json({ error: "Transcript and displayName are required." });
   }
   
   try {
-    // Call the analysis AI once.
+    console.log("Calling final analysis AI with transcript:", transcript);
     const analysisResult = await analyzeFinalTranscript(transcript);
+    console.log("Final analysis AI response:", analysisResult);
     if (!analysisResult) {
       return res.status(500).json({ status: 'failed', message: 'Final analysis returned null.' });
     }
@@ -198,6 +205,7 @@ app.post('/api/analysis', async (req, res) => {
     // Update the user's analysis row.
     const { updateUserAnalysis } = await import('./UpdateAnalysis.js');
     const updatedData = await updateUserAnalysis(displayName, newData);
+    console.log("Updated analysis data:", updatedData);
     
     // Return the updated analysis record along with the full analysis AI output.
     res.json({ status: 'success', data: updatedData, fullAnalysis: analysisResult });
@@ -209,9 +217,11 @@ app.post('/api/analysis', async (req, res) => {
 
 // POST /api/story - Generate a story based on scenarioOptions.
 app.post('/api/story', async (req, res) => {
+  console.log("Received /api/story request:", req.body);
   const { scenarioOptions } = req.body;
   try {
     const story = await generateStory(scenarioOptions);
+    console.log("Story AI response:", story);
     res.json({ story });
   } catch (error) {
     console.error('Error generating story:', error);
@@ -219,12 +229,9 @@ app.post('/api/story', async (req, res) => {
   }
 });
 
-/* ----------------------
-   Leaderboard & Performance Endpoints
-----------------------*/
-
 // GET /api/leaderboard - Returns all analysis_data rows sorted by selo_points descending.
 app.get('/api/leaderboard', async (req, res) => {
+  console.log("Received /api/leaderboard request");
   const { data, error } = await supabasePerformance
     .from('analysis_data')
     .select('*')
@@ -235,6 +242,7 @@ app.get('/api/leaderboard', async (req, res) => {
 
 // GET /api/performance - Returns the analysis_data row for a given display_name.
 app.get('/api/performance', async (req, res) => {
+  console.log("Received /api/performance request with query:", req.query);
   const { display_name } = req.query;
   if (!display_name) return res.status(400).json({ error: "display_name query parameter is required." });
   const { data, error } = await supabasePerformance
@@ -249,6 +257,7 @@ app.get('/api/performance', async (req, res) => {
 
 // GET /api/verify-analysis-rows - (Optional) Verify every registered user has an analysis row.
 app.get('/api/verify-analysis-rows', async (req, res) => {
+  console.log("Received /api/verify-analysis-rows request");
   try {
     const { data: users, error: listError } = await supabaseAuth.auth.admin.listUsers();
     if (listError) return res.status(500).json({ error: listError.message });
@@ -296,9 +305,7 @@ app.get('/api/verify-analysis-rows', async (req, res) => {
   }
 });
 
-// Additional routes to handle the home page and favicon requests.
-app.get('/', (req, res) => res.send('Server is up!'));
-
+// Additional routes to handle favicon requests.
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 app.get('/favicon.png', (req, res) => res.status(204).end());
 

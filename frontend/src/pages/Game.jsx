@@ -1,18 +1,17 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient"; // Ensure Supabase is configured
 import "../styles/game.css";
 import Player from "../game/player.js";
 import Enemy from "../game/enemy.js";
 import UI from "../game/ui.js";
 import moveToward from "../game/moveToward.js";
 import Bullet from "../game/bullet.js";
-import { supabase } from "../supabaseClient.js";
 import { preloadSounds, playSound } from "../game/soundManager.js";
 
 const SERVER_BASE_URL =
   (typeof process !== "undefined" && process.env.VITE_SERVER_URL) ||
   "https://shadow-system.vercel.app"; // Remove trailing slash
-
 
 const Game = () => {
   const canvasRef = useRef(null);
@@ -23,56 +22,35 @@ const Game = () => {
   const gameOverOverlayRef = useRef(null);
   const winnerTextRef = useRef(null);
 
-  // State for analysis and menu
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisAvailable, setAnalysisAvailable] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState("Guest");
+
   const gameOverRef = useRef(false);
   const navigate = useNavigate();
 
-  // Ensure the user has an analysis row
-  const ensureAnalysisRow = async (dn) => {
-    if (!dn) return;
-    try {
-      const response = await fetch(
-        `${SERVER_BASE_URL}/api/performance?display_name=${encodeURIComponent(dn)}`
-      );
-      if (response.status === 404) {
-        const dummyTranscript = "Initial dummy transcript.";
-        const createRes = await fetch(`${SERVER_BASE_URL}/api/analysis`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ transcript: dummyTranscript, displayName: dn }),
-        });
-        const createData = await createRes.json();
-        console.log("Created analysis row:", createData);
-      } else if (!response.ok) {
-        throw new Error("Failed to get performance row");
+  // Check for a signed-in user on mount using supabase.auth.getSession()
+  useEffect(() => {
+    const checkUserSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && session.user) {
+        const name =
+          session.user.user_metadata?.display_name ||
+          session.user.email ||
+          "Unknown User";
+        console.log("User is signed in:", name);
+        setDisplayName(name);
       } else {
-        const data = await response.json();
-        console.log("Analysis row exists:", data);
+        console.log("User is not signed in.");
+        setDisplayName("Guest");
       }
-    } catch (err) {
-      console.error("Error ensuring analysis row:", err);
-    }
-  };
+    };
+    checkUserSession();
+  }, []);
 
   useEffect(() => {
-    // Preload all sounds on startup
     preloadSounds();
-
-    async function getCurrentUser() {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) {
-        console.error("No user found in supabase auth", error);
-        return;
-      }
-      const dn = user.user_metadata.display_name;
-      setDisplayName(dn);
-      ensureAnalysisRow(dn);
-    }
-    getCurrentUser();
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -83,7 +61,6 @@ const Game = () => {
     const gameOverOverlay = gameOverOverlayRef.current;
     const winnerText = winnerTextRef.current;
 
-    // Helper functions
     const preloadImage = (img) =>
       new Promise((resolve, reject) => {
         if (img.complete && img.naturalWidth) resolve();
@@ -182,74 +159,74 @@ const Game = () => {
     ]).catch((err) => console.error("Error preloading images:", err));
 
     if (player.animations["Idle"] && player.animations["Idle"].frameHeight) {
-      player.y =
-        canvas.height - player.animations["Idle"].frameHeight * player.scale;
+      player.y = canvas.height - player.animations["Idle"].frameHeight * player.scale;
     }
     if (enemy.animations["Idle"] && enemy.animations["Idle"].frameHeight) {
-      enemy.y =
-        canvas.height - enemy.animations["Idle"].frameHeight * enemy.scale;
+      enemy.y = canvas.height - enemy.animations["Idle"].frameHeight * enemy.scale;
     }
     let startTime = Date.now();
     let conversationTranscript = "";
     let playerShouldMove = false;
     let enemyShouldMove = false;
 
-    // endGame: store final analysis and mark analysis available.
+    // endGame: Re-check session and send transcript to API.
+    // This function ends the game and shows the winner overlay.
     const endGame = async (winMessage) => {
+      console.log("Ending game with message:", winMessage);
       gameOverRef.current = true;
       if (winnerText) winnerText.innerText = winMessage;
       if (gameOverOverlay) gameOverOverlay.classList.remove("hidden");
       setAnalysisLoading(true);
-      let dn = displayName;
-      if (!dn) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          dn = user.user_metadata.display_name;
-          setDisplayName(dn);
-        }
-      }
-      if (!dn) {
-        console.error("No displayName available in endGame");
-        setAnalysisLoading(false);
-        return;
-      }
+
       try {
-        const finalAnalysisResponse = await fetch(
-          `${SERVER_BASE_URL}/api/analysis`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ transcript: conversationTranscript, displayName: dn }),
-          }
-        );
-        const finalAnalysis = await finalAnalysisResponse.json();
-        console.log("Final Analysis:", finalAnalysis);
+        console.log("Transcript sent to analysis API:", conversationTranscript);
+        const { data: { session } } = await supabase.auth.getSession();
+        let currentDisplayName = "Guest";
+        if (session && session.user) {
+          currentDisplayName =
+            session.user.user_metadata?.display_name ||
+            session.user.email ||
+            "Unknown User";
+          console.log("User is signed in (rechecked):", currentDisplayName);
+        } else {
+          console.log("User is not signed in (rechecked).");
+        }
+
+        const response = await fetch(`${SERVER_BASE_URL}/api/analysis`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            transcript: conversationTranscript,
+            displayName: currentDisplayName
+          })
+        });
+        const finalAnalysis = await response.json();
+        console.log("Final analysis from API:", finalAnalysis);
+        localStorage.setItem("finalAnalysis", JSON.stringify(finalAnalysis));
         setAnalysisAvailable(true);
       } catch (err) {
-        console.error("Error storing final analysis:", err);
+        console.error("Error fetching final analysis:", err);
       } finally {
         setAnalysisLoading(false);
       }
     };
 
-    // Game loop
-    const gameLoop = () => {
-      if (gameOverRef.current) return;
-      updateTimer(gameTimer, startTime);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (bgImage.complete) {
-        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-      }
+    // Removed Analyse button handler as it's no longer in the menu.
 
-      // --- Player Attack Logic ---
+    // In player attack logic, if the returned weapon is "none" or "end", do nothing.
+    const processPlayerAttack = () => {
       if (player.pendingAttack) {
+        const weaponLower = player.pendingAttack.weapon?.toLowerCase();
+        if (weaponLower === "none" || weaponLower === "end") {
+          player.setState("Idle");
+          delete player.pendingAttack;
+          return;
+        }
         if (player.pendingAttack.move === "Charge") {
-          // For charge, do not change the player's animation.
           if (!player.pendingAttack.soundPlayed) {
             playSound(player, "charge");
             player.pendingAttack.soundPlayed = true;
           }
-          // Immediately fire a bullet from the player's position.
           bullets.push(
             new Bullet(
               player.x + (player.animations["Idle"].frameWidth * player.scale) / 2,
@@ -263,7 +240,6 @@ const Game = () => {
           delete player.pendingAttack;
           player.setState("Idle");
         } else {
-          // Other attacks (e.g. Attack_1, Attack_2)
           if (Math.abs(player.x - enemy.x) >= 50) {
             player.setState("Run");
             moveToward(player, enemy);
@@ -284,14 +260,19 @@ const Game = () => {
             }
           }
         }
-      } else {
-        player.setState("Idle");
       }
+    };
 
-      // --- Enemy Attack Logic ---
+    // In enemy attack logic, if the returned weapon is "none" or "end", do nothing.
+    const processEnemyAttack = () => {
       if (enemy.pendingAttack) {
+        const weaponLower = enemy.pendingAttack.weapon?.toLowerCase();
+        if (weaponLower === "none" || weaponLower === "end") {
+          enemy.setState("Idle");
+          delete enemy.pendingAttack;
+          return;
+        }
         if (enemy.pendingAttack.move === "Charge") {
-          // For enemy charge, fire a bullet immediately without changing its animation.
           if (!enemy.pendingAttack.soundPlayed) {
             playSound(enemy, "charge");
             enemy.pendingAttack.soundPlayed = true;
@@ -335,11 +316,20 @@ const Game = () => {
             }
           }
         }
-      } else {
-        enemy.setState("Idle");
+      }
+    };
+
+    const gameLoop = () => {
+      if (gameOverRef.current) return;
+      updateTimer(gameTimer, startTime);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (bgImage.complete) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       }
 
-      // --- Bullet Handling ---
+      processPlayerAttack();
+      processEnemyAttack();
+
       bullets.forEach((bullet) => {
         bullet.update();
         bullet.draw(ctx);
@@ -412,7 +402,7 @@ const Game = () => {
             const resCustomer = await fetch(`${SERVER_BASE_URL}/api/customer-response`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ message })
+              body: JSON.stringify({ message: playerMessage })
             });
             let customerData = {};
             try {
@@ -420,9 +410,13 @@ const Game = () => {
             } catch (err) {
               console.error("Failed to parse customer response JSON", err);
             }
-            const customerReply = customerData.response || "";
+            const customerReplyRaw = customerData.response || "";
+            const customerReply = customerReplyRaw.trim() === "" ? "No response" : customerReplyRaw;
             conversationTranscript += `Customer: ${customerReply}\n`;
             animateEnemyText(customerReply, dialogOutput);
+
+            // Analyze enemy performance
+            const enemyHealth = enemy.health ?? 100;
             const resEnemy = await fetch(`${SERVER_BASE_URL}/api/analyze-game-performance`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -430,7 +424,7 @@ const Game = () => {
                 role: "enemy",
                 currentText: customerReply,
                 previousText: playerMessage,
-                currentHealth: enemy.health,
+                currentHealth: enemyHealth,
               }),
             });
             let enemyAnalysis = {};
@@ -441,12 +435,15 @@ const Game = () => {
             }
             if (enemyAnalysis) {
               enemy.pendingAttack = {
-                move: enemyAnalysis.Weapon,
-                attackPower: enemyAnalysis.attackPower,
-                hpPoints: enemyAnalysis.hpPoints,
-                weapon: enemyAnalysis.Weapon,
+                move: enemyAnalysis.Weapon || "Idle",
+                attackPower: enemyAnalysis.attackPower || 0,
+                hpPoints: enemyAnalysis.hpPoints || 0,
+                weapon: enemyAnalysis.Weapon || "Idle",
               };
             }
+
+            // Analyze player performance
+            const playerHealth = player.health ?? 100;
             const resPlayer = await fetch(`${SERVER_BASE_URL}/api/analyze-game-performance`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -454,7 +451,7 @@ const Game = () => {
                 role: "player",
                 currentText: playerMessage,
                 previousText: customerReply,
-                currentHealth: player.health,
+                currentHealth: playerHealth,
               }),
             });
             let playerAnalysis = {};
@@ -465,10 +462,10 @@ const Game = () => {
             }
             if (playerAnalysis) {
               player.pendingAttack = {
-                move: playerAnalysis.Weapon,
-                attackPower: playerAnalysis.attackPower,
-                hpPoints: playerAnalysis.hpPoints,
-                weapon: playerAnalysis.Weapon,
+                move: playerAnalysis.Weapon || "Idle",
+                attackPower: playerAnalysis.attackPower || 0,
+                hpPoints: playerAnalysis.hpPoints || 0,
+                weapon: playerAnalysis.Weapon || "Idle",
               };
             }
           } catch (error) {
@@ -487,11 +484,7 @@ const Game = () => {
       observer.disconnect();
       dialogInput.removeEventListener("keydown", handleDialogInput);
     };
-  }, [displayName]);
-
-  const handleAnalysis = () => {
-    navigate("/analysis");
-  };
+  }, []);
 
   return (
     <div id="gameContainer">
@@ -506,25 +499,12 @@ const Game = () => {
           placeholder="Type your dialogue..."
         />
       </div>
-      {/* Menu Button */}
       <button id="menuButton" onClick={() => setMenuVisible(!menuVisible)}>
         Menu
       </button>
       {menuVisible && (
         <div id="menuPopup" className="donation-bg">
           <button onClick={() => setMenuVisible(false)}>Resume</button>
-          
-          <button
-            onClick={() => {
-              if (analysisAvailable) {
-                setMenuVisible(false);
-                handleAnalysis();
-              }
-            }}
-            disabled={!analysisAvailable}
-          >
-            Analyse
-          </button>
           <button
             onClick={() => {
               setMenuVisible(false);
@@ -533,18 +513,20 @@ const Game = () => {
           >
             Home
           </button>
+          {/* Removed Analyse button */}
         </div>
       )}
       <div id="gameOverOverlay" ref={gameOverOverlayRef} className="hidden">
         <div id="gameOverContent">
           <h1 id="winnerText" ref={winnerTextRef}></h1>
-          <button onClick={handleAnalysis} disabled={!analysisAvailable}>
-            Analysis
-          </button>
           {analysisLoading && (
-            <p className="loading">
-              Analyzing conversation... please wait
-            </p>
+            <p className="loading">Analysing convo wait...</p>
+          )}
+          {analysisAvailable && (
+            <>
+              <p className="analysis-done">Final analysis is complete!</p>
+              <button onClick={() => navigate("/analysis")}>View Analysis</button>
+            </>
           )}
         </div>
       </div>

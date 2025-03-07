@@ -58,12 +58,7 @@ function App() {
           />
           <Route
             path="/game"
-            element={
-              <ProtectedRoute>
-                <Game />
-              </ProtectedRoute>
-            }
-          />
+            element={<Game />}/>
           <Route
             path="/story"
             element={
@@ -75,9 +70,7 @@ function App() {
           <Route
             path="/analysis"
             element={
-              <ProtectedRoute>
                 <AnalysisPage />
-              </ProtectedRoute>
             }
           />
           <Route
